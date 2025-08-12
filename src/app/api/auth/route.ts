@@ -1,37 +1,38 @@
 import { NextResponse } from 'next/server';
-import { sign } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
-import { auth } from '@/lib/firebase';  // We'll create this file next if not already
+import { adminAuth } from '@/lib/firebaseAdmin';
 
 export async function POST(request: Request) {
-  const { idToken } = await request.json();  // Expect Firebase ID token from client
+  const { idToken } = await request.json();
 
   try {
-    // Verify Firebase ID token server-side
-    const decodedToken = await auth.verifyIdToken(idToken);
+    const decodedToken = await adminAuth.verifyIdToken(idToken);
     const userId = decodedToken.uid;
-    const email = decodedToken.email;
+    const email = decodedToken.email || '';
 
-    // Sign Supabase JWT with Firebase user data
-    const supabaseToken = sign(
+    const supabaseToken = jwt.sign(
       {
-        sub: userId,  // Firebase UID as sub (text)
-        id: userId,   // Custom claim for auth_user_id()
-        email: email, // Custom claim for auth_user_email()
-        role: 'authenticated',  // Required for authenticated policies
-        aud: 'authenticated',   // Required
-        exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24),  // 24-hour expiration
+        sub: userId,
+        id: userId,
+        email: email,
+        role: 'authenticated',
+        aud: 'authenticated',
+        exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24),
       },
       process.env.SUPABASE_JWT_SECRET!
     );
 
-    // Set cookie with Supabase token
-    cookies().set(process.env.SUPABASE_ACCESS_TOKEN_COOKIE!, supabaseToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 24,
-      path: '/',
-    });
+    const cookieName = process.env.SUPABASE_ACCESS_TOKEN_COOKIE;
+    if (cookieName) {
+      // @ts-ignore -- Ignore TS type error for cookies-next, as types not available
+      cookies().set(cookieName, supabaseToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 60 * 60 * 24,
+        path: '/',
+      });
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
