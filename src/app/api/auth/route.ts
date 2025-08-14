@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
     const cookieName = process.env.SUPABASE_ACCESS_TOKEN_COOKIE;
     if (cookieName) {
-      // @ts-ignore -- Ignore TS type error for cookies-next, as types not available
+      // @ts-expect-error <optional comment why suppressing>
       cookies().set(cookieName, supabaseToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',

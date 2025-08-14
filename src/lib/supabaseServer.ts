@@ -15,14 +15,14 @@ export async function getSupabaseServer() {
         set(name: string, value: string, options) {
           try {
             cookieStore.set({ name, value, ...options });
-          } catch (error) {
+          } catch {
             // Ignore errors during static rendering; middleware can handle session refreshes
           }
         },
         remove(name: string, options) {
           try {
             cookieStore.set({ name, value: '', ...options });
-          } catch (error) {
+          } catch {
             // Ignore errors during static rendering
           }
         },
