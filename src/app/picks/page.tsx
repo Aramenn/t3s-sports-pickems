@@ -26,13 +26,18 @@ export default async function PicksPage() {
 
   if (error) {
     console.error('Error fetching games:', error.message);
-    return <div>Error loading picks: {error.message}. Try refreshing or check console.</div>;
+    return <div className="text-red-600 font-bold">Error loading picks: {error.message}. Try refreshing or check console.</div>;
   }
 
   const enrichedGames: EnrichedGame[] = (games ?? []).map((game: Game) => ({
     ...game,
-    formattedDate: new Date(game.date).toLocaleDateString(),
+    formattedDate: new Date(game.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
   }));
 
-  return <PicksClient games={enrichedGames} />;
+  return (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-center mb-4">Upcoming Games</h2>
+      <PicksClient games={enrichedGames} />
+    </div>
+  );
 }
