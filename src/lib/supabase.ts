@@ -1,27 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
-import { cookies } from 'next/headers';  // For server-side
-
+import { createBrowserClient } from '@supabase/ssr';
 
 export function getSupabaseClient() {
-  const cookieStore = cookies();
-  //@ts-ignore
-  const token = cookieStore.get(process.env.SUPABASE_ACCESS_TOKEN_COOKIE!)?.value;
-
-  const authHeader = token ? `Bearer ${token}` : '';
-
-  return createClient(
+  return createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-        detectSessionInUrl: false,
-      },
-      global: {
-        // @ts-ignore
-        headers: { Authorization: authHeader },
-      },
-    }
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 }

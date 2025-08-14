@@ -1,32 +1,37 @@
-import { getCurrentWeekGames, getRankings, getTeams } from '@/lib/cfdApi';
-import PicksClient from '@/components/PicksClient';  // Import the client component
+import PicksClient from '@/components/PicksClient'; // Adjust path if needed
+import { getSupabaseServer } from '@/lib/supabaseServer';
 
-const CURRENT_YEAR = 2025;
-const CURRENT_WEEK = 1;
+interface Game {
+  id: string;
+  date: string;
+  home_team: string;
+  away_team: string;
+  spread: number;
+  // Add any other fields from your Supabase 'games' table schema here
+}
 
-export default async function Picks() {
-  const games = await getCurrentWeekGames(CURRENT_YEAR, CURRENT_WEEK);
-  const rankings = await getRankings(CURRENT_YEAR, CURRENT_WEEK);
-  const teams = await getTeams();
+interface EnrichedGame extends Game {
+  formattedDate: string;
+}
 
-  const top25Teams = new Set(rankings.map((r: any) => r.school));
-  const top25Games = games.filter((g: any) => top25Teams.has(g.home_team) || top25Teams.has(g.away_team));
+export default async function PicksPage() {
+  const supabase = await getSupabaseServer();
 
-  const enrichedGames = top25Games.map((game: any) => {
-    const homeRank = rankings.find((r: any) => r.school === game.home_team)?.rank;
-    const awayRank = rankings.find((r: any) => r.school === game.away_team)?.rank;
-    const homeTeam = teams.find((t: any) => t.school === game.home_team);
-    const awayTeam = teams.find((t: any) => t.school === game.away_team);
-    return {
-      ...game,
-      home_rank: homeRank,
-      away_rank: awayRank,
-      home_logo: homeTeam?.logos[0] || '',
-      away_logo: awayTeam?.logos[0] || '',
-      location: game.venue,
-      stadium: game.venue,
-    };
-  });
+  const { data: games, error } = await supabase
+    .from('games')
+    .select('*')
+    .order('date', { ascending: true })
+    .gte('date', new Date().toISOString()) as unknown as { data: Game[] | null; error: any | null };
+
+  if (error) {
+    console.error('Error fetching games:', error.message);
+    return <div>Error loading picks: {error.message}. Try refreshing or check console.</div>;
+  }
+
+  const enrichedGames: EnrichedGame[] = (games ?? []).map((game: Game) => ({
+    ...game,
+    formattedDate: new Date(game.date).toLocaleDateString(),
+  }));
 
   return <PicksClient games={enrichedGames} />;
 }
