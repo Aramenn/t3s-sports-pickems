@@ -11,7 +11,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="min-h-screen bg-gray-100 text-gray-800 antialiased">
-        <header className="bg-blue-600 text-white p-6 shadow-md">
+        <header className="bg-red-600 text-white p-6 shadow-md">
           <h1 className="text-3xl font-bold">
             <Link href="/">T3&apos;s Sports Pickems</Link>
           </h1>
