@@ -21,8 +21,9 @@ export default function HomePage() {
       <div className="text-center">
         <h1 className="text-4xl font-bold mb-4">{message}</h1>
         <p className="text-lg mb-8">Get ready for college football action starting August 23, 2025.</p>
+        <p className="text-lg mb-9">The 2025 season will feature an overhauled pick system and new trophies to compete for!</p>
         <Link href="/picks" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          View Picks (Test Mode)
+          View Picks (Picks page available soon!)
         </Link>
       </div>
     </div>
