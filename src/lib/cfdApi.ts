@@ -11,13 +11,33 @@ async function fetchCFD(endpoint: string, params: Record<string, string> = {}) {
   return response.json();
 }
 
+interface Rank {
+  rank: number;
+  school: string;
+  conference: string;
+  firstPlaceVotes: number;
+  points: number;
+}
+
+interface Poll {
+  poll: string;
+  ranks: Rank[];
+}
+
+interface RankingWeek {
+  season: number;
+  seasonType: string;
+  week: number;
+  polls: Poll[];
+}
+
 export async function getCurrentWeekGames(year: number, week: number) {
   return fetchCFD('/games', { year: year.toString(), week: week.toString(), division: 'fbs' });
 }
 
 export async function getRankings(year: number, week: number) {
-  const rankings = await fetchCFD('/rankings', { year: year.toString(), week: week.toString() });
-  return rankings[0]?.polls.find((p: any) => p.poll === 'AP Top 25')?.ranks || [];
+  const rankings: RankingWeek[] = await fetchCFD('/rankings', { year: year.toString(), week: week.toString() });
+  return rankings[0]?.polls.find((p: Poll) => p.poll === 'AP Top 25')?.ranks || [];
 }
 
 export async function getTeams() {
