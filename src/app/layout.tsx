@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen bg-gray-100 text-gray-800 antialiased">
         <header className="bg-red-900 text-white p-6 shadow-md">
           <h1 className="text-3xl font-bold">
-            <Link href="/">T3s Sports Pickems</Link>
+            <Link href="/">T3&apos;s Sports Pickems</Link>
           </h1>
         </header>
         <main className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-8">
