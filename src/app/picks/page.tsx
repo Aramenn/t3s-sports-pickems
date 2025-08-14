@@ -1,3 +1,4 @@
+import type { PostgrestError } from '@supabase/supabase-js';
 import PicksClient from '@/components/PicksClient'; // Adjust path if needed
 import { getSupabaseServer } from '@/lib/supabaseServer';
 
@@ -21,7 +22,7 @@ export default async function PicksPage() {
     .from('games')
     .select('*')
     .order('date', { ascending: true })
-    .gte('date', new Date().toISOString()) as unknown as { data: Game[] | null; error: any | null };
+    .gte('date', new Date().toISOString()) as unknown as { data: Game[] | null; error: PostgrestError | null };
 
   if (error) {
     console.error('Error fetching games:', error.message);
